@@ -5,7 +5,7 @@ if (fs.existsSync('./data.json')){
         if (err) {
             console.error(err);
         }else {
-            console.info('File deleted');
+            console.info('The file has been deleted.');
         }
     })
 }
@@ -13,7 +13,7 @@ if (fs.existsSync('./data.json')){
 let certificate = { title:'AZ-204', year: 2023 };
 const json = JSON.stringify(certificate);
 fs.writeFile('./data.json', json, () => {
-    console.info('File saved');
+    console.info('The file has been saved.');
 });
 
 fs.readFile('./data.json', (err, data) => {
@@ -21,7 +21,7 @@ fs.readFile('./data.json', (err, data) => {
         console.error(err);
     } else {
         certificate = JSON.parse(data);
-        console.info('File opened');
+        console.info('The file has been read.');
         console.info(certificate);
     }
 });
