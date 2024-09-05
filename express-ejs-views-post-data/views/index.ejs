@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        li {
+            list-style-type: none;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <p>
+            <h2>Tasks</h2>
+        </p>
+        <p>
+            <form action="/add" method="post">
+                <input name="description" type="text" placeholder="Type your task here">
+                <button type="submit">Add</button>
+            </form>
+        </p>
+        <p>
+            <ul>
+                <% for (let task of tasks) { %>
+                    <li>
+                        <input type="checkbox" checked="<%=task.done %>">
+                        <%= task.description %>
+                    </li>
+                <% } %>
+            </ul>
+        </p>
+    </div>
+</body>
+</html>
