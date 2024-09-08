@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self';"/> -->
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://www.google.com">
+    <title>Document</title>
+    <style>
+        li {
+            list-style-type: none;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <p>
+            <h2>Tasks</h2>
+        </p>
+        <p>
+            <form action="/add" method="post">
+                <input name="description" type="text" placeholder="Type your task here">
+                <button type="submit">Add</button>
+            </form>
+        </p>
+        <p>
+            <ul>
+                <% for (let task of tasks) { %>
+                    <li>
+                        <input onchange="updateTask('<%= encodeURIComponent(JSON.stringify(task)) %>')" type="checkbox" 
+                        <% if (task.done) { %> 
+                            checked
+                        <% } %>
+                        />
+                        <%= task.description %>
+                        <button type="button" class="delete" data-id="<%= task.id %>" onclick="deleteTask('<%= task.id %>')">
+                            Delete
+                        </button>
+                    </li>
+                <% } %>
+            </ul>
+        </p>
+    </div>
+    <script>
+        function deleteTask(id){  
+            fetch('/tasks/' + id, { method: "DELETE" })
+            .then(result => result.json())
+            .then(json => window.location.href = json.redirect);         
+        }
+
+        function updateTask(data){
+            const task = JSON.parse(decodeURIComponent(data));
+            const done = !task.done;
+            const updateTask = { ...task, done };
+            const body = JSON.stringify(updateTask);
+            fetch('/tasks/' + updateTask.id, {
+                method: 'PUT', 
+                body: body,
+                headers: {'content-type': 'application/json'}
+            })
+            .then(result => result.json())
+            .then(json => window.location.href = json.redirect);
+        }        
+    </script>
+</body>
+</html>
