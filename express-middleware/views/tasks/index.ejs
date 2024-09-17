@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self';"/> -->
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://www.google.com">
+    <title>Document</title>
+    <style>
+        li > button {
+            margin-top: -5px;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <script language="javascript" src="js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <h2 class="col-xs-6 col-xs-offset-3" style="text-align: center;">Tasks (Node.js)</h2>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-xs-offset-3">
+                <form action="/tasks" method="post" class="form form-horizontal">
+                    <div class="form-group">
+                        <div class="col-xs-10">
+                            <input class="form-control" name="description" type="text" placeholder="Type your task here">
+                        </div>
+                        <div class="col-xs-2">
+                            <button class="btn btn-primary" type="submit">Add</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-xs-offset-3">
+            <ul class="list-group">
+                <% for (let task of tasks) { %>
+                    <li class="list-group-item">
+                        <input onchange="updateTask('<%= encodeURIComponent(JSON.stringify(task)) %>')" type="checkbox" 
+                        <% if (task.done) { %> 
+                            checked
+                        <% } %>
+                        />
+                        <%= task.description %>
+                        <button type="button" class="btn btn-primary delete pull-right"  data-id="<%= task.id %>" onclick="deleteTask('<%= task.id %>')">
+                            Delete
+                        </button>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+        </div>
+    </div>
+    <script>
+        function deleteTask(id){  
+            fetch('/tasks/' + id, { method: "DELETE" })
+            .then(result => result.json())
+            .then(json => window.location.href = json.redirect);         
+        }
+
+        function updateTask(data){
+            const task = JSON.parse(decodeURIComponent(data));
+            const done = !task.done;
+            const updateTask = { ...task, done };
+            const body = JSON.stringify(updateTask);
+            fetch('/tasks/' + updateTask.id, {
+                method: 'PUT', 
+                body: body,
+                headers: {'content-type': 'application/json'}
+            })
+            .then(result => result.json())
+            .then(json => window.location.href = json.redirect);
+        }        
+    </script>
+</body>
+</html>
